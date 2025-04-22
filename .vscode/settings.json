@@ -1,16 +1,8 @@
 {
-    "files.exclude": {
-        "**/*.meta": true,
-        "AgentsExample/Build/": true,
-        "AgentsExample/Library/": true,
-        "AgentsExample/library/": true,
-        "AgentsExample/obj/": true,
-        "AgentsExample/Obj/": true,
-        "AgentsExample/Logs/": true,
-        "AgentsExample/ProjectSettings/": true,
-        "AgentsExample/UserSettings/": true,
-        "AgentsExample/temp/": true,
-        "AgentsExample/Temp/": true
-    },
-    "dotnet.defaultSolution": "AgentsExample.sln"
+    "cSpell.words": [
+        "Behaviour",
+        "Blackman",
+        "Mathf",
+        "scriptable"
+    ]
 }

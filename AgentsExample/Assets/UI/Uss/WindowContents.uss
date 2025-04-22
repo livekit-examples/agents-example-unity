@@ -1,0 +1,96 @@
+.agent__container {
+    -unity-font-definition: url("project://database/Assets/Fonts/sysfont.asset?fileID=11400000&guid=52e0b0334ef5d47fe8848d916976e0df&type=2#sysfont");
+    font-size: 16px;
+    height: 100%;
+}
+
+.agent__text {
+    font-size: 32px;
+    margin-top: 18px;
+    margin-right: 18px;
+    margin-bottom: 18px;
+    margin-left: 18px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    white-space: normal;
+}
+
+
+.agent__scroll {
+    flex: 6;
+}
+
+.agent__visualizer {
+    flex: 1;
+    margin: 8px;
+    margin-top: 0;
+
+    /* Custom properties */
+    --bar-color: black;
+    --bar-gap: 0.4;
+}
+
+/*
+.unity-scroller__low-button {
+    width: 100%;
+    height: 8px;
+    border-width: 0;
+    border-color: black;
+    background-color: transparent;
+    background-size: cover;
+    background-position: 0 0;
+    background-position-x: center 0;
+    background-position-y: center 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.unity-scroller__high-button {
+    width: 100%;
+    height: 8px;
+    border-width: 0;
+    border-color: black;
+    background-color: transparent;
+    background-size: cover;
+    background-position: 0 0;
+    background-position-x: center 0;
+    background-position-y: center 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.unity-scroller__low-button {
+    border-bottom-width: 1px;
+}
+
+.unity-scroller__high-button {
+    border-top-width: 1px;
+}
+
+.unity-scroller__slider {
+    width: 8px;
+}
+
+.unity-scroller {
+    width: 8px;
+    border-color: black;
+    border-left-width: 1px;
+}
+
+.unity-base-slider__drag-container {
+    background-color: red;
+    width: 8px;
+    border-width: 0;
+}
+
+.unity-base-slider__dragger {
+    position: relative;
+    width: 8px;
+    background-color: blue;
+}
+
+.unity-base-slider__tracker {
+    border-width: 0;
+    width: 8px;
+}
+*/
