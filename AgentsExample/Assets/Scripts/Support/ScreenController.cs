@@ -15,24 +15,22 @@ namespace AgentsExample
         private ScrollView _transcriptionScroll;
         private AudioVisualizer _audioVisualizer;
 
-        public IEnumerator Boot()
-        {
-            yield return AnimateToState("Boot");
-        }
+        private bool _windowOpen = false;
 
         public IEnumerator OpenWindow()
         {
+            // TODO: sound effect
+            if (_windowOpen) yield break;
             yield return AnimateToState("WindowOpen");
+            _windowOpen = true;
         }
 
         public IEnumerator CloseWindow()
         {
+            // TODO: sound effect
+            if (!_windowOpen) yield break;
             yield return AnimateToState("WindowClose");
-        }
-
-        public bool WindowOpen {
-            get => _animator.GetBool("WindowOpen");
-            set => _animator.SetBool("WindowOpen", value);
+            _windowOpen = false;
         }
 
         public AudioSource VisualizerAudioSource {
@@ -76,7 +74,7 @@ namespace AgentsExample
         private IEnumerator AnimateToState(string stateName)
         {
             int stateHash = Animator.StringToHash(stateName);
-            _animator.CrossFade(stateHash, 0.25f);
+            _animator.CrossFade(stateHash, 0.0f);
 
             while (_animator.GetCurrentAnimatorStateInfo(0).shortNameHash != stateHash)
                 yield return null;

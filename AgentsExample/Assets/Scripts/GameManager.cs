@@ -92,15 +92,16 @@ namespace AgentsExample
             _agent.OnTranscription += OnAgentTranscriptionReceived;
 
             var connect = StartCoroutine(_agent.Connect());
-            var boot = StartCoroutine(_screen.Boot());
             var zoomIn = StartCoroutine(_camera.ZoomIn());
-
-            yield return boot;
             yield return zoomIn;
             yield return connect;
 
             if (!_agent.IsConnected)
+            {
                 yield return StartCoroutine(TransitionToState(GameState.MainMenu));
+                yield break;
+            }
+            yield return _screen.OpenWindow();
 
             _controls.ExitRequested += OnExitRequested;
             _controls.MuteRequested += OnMuteRequested;
