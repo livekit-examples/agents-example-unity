@@ -86,13 +86,13 @@ Button:active {
     transition-timing-function: ease-in-out;
 }
 
-.view--visible {
-    opacity: 1;
-}
-
 .view--main-menu {
     justify-content: space-between;
     align-items: stretch;
+}
+
+.view--visible {
+    opacity: 1;
 }
 
 .view--main-menu__heading {
@@ -117,13 +117,20 @@ Button:active {
     border-top-right-radius: 100%;
     border-bottom-right-radius: 100%;
     border-bottom-left-radius: 1000%;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
+    background-size: 50% 50%;
+}
+
+.view--controls__button--exit {
+    background-image: url("/Assets/Textures/Icons.png#Close");
 }
 
 .view--controls__button--mute {
     margin-right: 12px;
+    background-image: url("/Assets/Textures/Icons.png#MicOn");
 }
 
-.view--controls__button--exit {
+.view--controls__button--mute--active {
+    background-image: url("/Assets/Textures/Icons.png#MicOff");
 }
