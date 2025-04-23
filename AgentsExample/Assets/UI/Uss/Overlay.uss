@@ -131,6 +131,6 @@ Button:active {
     background-image: url("/Assets/Textures/Icons.png#MicOn");
 }
 
-.view--controls__button--mute--active {
+.view--controls__button--mute.muted {
     background-image: url("/Assets/Textures/Icons.png#MicOff");
 }

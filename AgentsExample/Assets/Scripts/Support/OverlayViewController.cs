@@ -3,6 +3,9 @@ using UnityEngine.UIElements;
 
 namespace AgentsExample
 {
+    /// <summary>
+    /// Base class for UI overlay views.
+    /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class OverlayViewController : MonoBehaviour
     {

@@ -139,6 +139,19 @@ namespace AgentsExample
             yield return rtcSource.PrepareAndStart();
         }
 
+        /// <summary>
+        /// Whether the microphone is muted.
+        /// </summary>
+        public bool IsMicrophoneMuted
+        {
+            get => _microphoneSource?.mute ?? false;
+            set
+            {
+                if (_microphoneSource == null) return;
+                _microphoneSource.mute = value;
+            }
+        }
+
         private void OnParticipantConnected(Participant participant)
         {
             if (!IsAgent(participant)) return;

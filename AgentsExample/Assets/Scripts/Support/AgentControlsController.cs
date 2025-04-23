@@ -10,6 +10,18 @@ namespace AgentsExample
         public event Action MuteRequested;
         public event Action ExitRequested;
 
+        public bool IsMicrophoneMuted
+        {
+            get => _muteButton.ClassListContains("muted");
+            set
+            {
+                if (value)
+                    _muteButton.AddToClassList("muted");
+                else
+                    _muteButton.RemoveFromClassList("muted");
+            }
+        }
+
         private Button _muteButton;
         private Button _exitButton;
 

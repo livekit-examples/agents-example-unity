@@ -105,6 +105,7 @@ namespace AgentsExample
 
             _controls.ExitRequested += OnExitRequested;
             _controls.MuteRequested += OnMuteRequested;
+            _controls.IsMicrophoneMuted = _agent.IsMicrophoneMuted;
             _controls.Present();
         }
 
@@ -130,7 +131,8 @@ namespace AgentsExample
 
         private void OnMuteRequested()
         {
-            // TODO: mute/unmute, update UI
+            _agent.IsMicrophoneMuted = !_agent.IsMicrophoneMuted;
+            _controls.IsMicrophoneMuted = _agent.IsMicrophoneMuted;
         }
 
         private void OnAgentStateChanged(AgentController.State state)
