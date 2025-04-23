@@ -114,7 +114,7 @@ namespace AgentsExample
             _agent.Disconnect();
 
             yield return _screen.CloseWindow();
-            _screen.VisualizerAudioSource = null;
+            _screen.AgentVoiceSource = null;
 
             _controls.ExitRequested -= OnExitRequested;
             _controls.MuteRequested -= OnMuteRequested;
@@ -139,7 +139,7 @@ namespace AgentsExample
             {
                 case AgentController.State.Connected:
                     StartCoroutine(_screen.OpenWindow());
-                    _screen.VisualizerAudioSource = _agent.VoiceAudioSource;
+                    _screen.AgentVoiceSource = _agent.VoiceAudioSource;
                     break;
                 case AgentController.State.Disconnected:
                 case AgentController.State.Error:

@@ -8,7 +8,7 @@ namespace AgentsExample
     public class ScreenController : MonoBehaviour
     {
         private Animator _animator;
-        private AudioSource _audioSource;
+        private AudioSource _agentVoiceSource;
         private AudioSpectrumProcessor _spectrumProcessor;
 
         private Label _transcriptionField;
@@ -33,9 +33,9 @@ namespace AgentsExample
             _windowOpen = false;
         }
 
-        public AudioSource VisualizerAudioSource {
-            get => _audioSource;
-            set => _audioSource = value;
+        public AudioSource AgentVoiceSource {
+            get => _agentVoiceSource;
+            set => _agentVoiceSource = value;
         }
 
         void Start()
@@ -46,8 +46,8 @@ namespace AgentsExample
 
         public void Update()
         {
-            if (_audioSource == null) return;
-            _spectrumProcessor.UpdateFrom(_audioSource);
+            if (_agentVoiceSource == null) return;
+            _spectrumProcessor.UpdateFrom(_agentVoiceSource);
             _audioVisualizer.Update(_spectrumProcessor.Processed);
         }
 
