@@ -61,8 +61,6 @@ namespace AgentsExample
         public void AppendTranscription(string transcription)
         {
             _transcriptionField.text += transcription;
-            // _scrollHeightTarget = _transcriptionScroll.contentContainer.layout.height;
-            // _scrollVelocity = 0;
         }
 
         /// <summary>
@@ -74,15 +72,19 @@ namespace AgentsExample
         }
 
         /// <summary>
-        /// Updates the audio visualizer using the spectrum processor.\
+        /// Updates the audio visualizer using the spectrum processor.
         /// </summary>
         private IEnumerator UpdateVisualizer()
         {
             while (true)
             {
-                if (_agentVoiceSource == null) yield break;
+                if (_agentVoiceSource == null) {
+                    yield return null;
+                    continue;
+                }
                 _spectrumProcessor.UpdateFrom(_agentVoiceSource);
-                _audioVisualizer.Update(_spectrumProcessor.Processed);
+                _audioVisualizer.Update(_spectrumProcessor.Output);
+                yield return null;
             }
         }
 
@@ -105,7 +107,7 @@ namespace AgentsExample
         private void OnEnable()
         {
             _animator = GetComponent<Animator>();
-            _spectrumProcessor = new AudioSpectrumProcessor(128);
+            _spectrumProcessor = new AudioSpectrumProcessor(64);
 
             var root = GetComponent<UIDocument>().rootVisualElement;
             _transcriptionField = root.Q<Label>("TranscriptionField");

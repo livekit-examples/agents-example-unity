@@ -6,36 +6,82 @@ namespace AgentsExample
 {
     public class AudioSpectrumProcessor
     {
-        public float[] _raw;
-        public float[] _processed;
-        private float _maxObserved = 0f;
-        private readonly int _resolution;
+        private float[] _spectrum;
+        private float[] _bins;
+        private float[] _finalBins;
 
-        public AudioSpectrumProcessor(int resolution)
+        public AudioSpectrumProcessor(int bins)
         {
-            Debug.Assert(resolution >= 64 && resolution <= 8192, "Resolution must be >= 64 and <= 8192");
-            Debug.Assert((resolution & (resolution - 1)) == 0, "Resolution Must be a power of 2");
-
-            _resolution = resolution;
-            _raw = new float[resolution];
-            _processed = new float[resolution];
+            _spectrum = new float[SAMPLE_SIZE];
+            _bins = new float[bins];
+            _finalBins = new float[bins];
         }
 
-        public float[] Processed => _processed;
+        public float[] Output => _finalBins;
 
         public void UpdateFrom(AudioSource audioSource)
         {
-            audioSource.GetSpectrumData(_raw, 0, FFTWindow.BlackmanHarris);
-            Update();
+            audioSource.GetSpectrumData(_spectrum, 0, FFTWindow.BlackmanHarris);
+            ProcessSpectrum();
         }
 
-        private void Update()
+        private void ProcessSpectrum()
         {
-            _maxObserved = Mathf.Max(_raw.Max(), _maxObserved);
-            if (_maxObserved == 0) return;
+            var max = 0f;
+            for (int i = 0; i < _bins.Length; i++)
+            {
+                var logStart = Mathf.Pow((float)i / _bins.Length, 2) * _spectrum.Length;
+                var logEnd = Mathf.Pow((float)(i + 1) / _bins.Length, 2) * _spectrum.Length;
 
-            for (int i = 0; i < _resolution; i++)
-                _processed[i] = _raw[i] / _maxObserved;
+                var start = Mathf.Clamp(Mathf.FloorToInt(logStart), 0, _spectrum.Length - 1);
+                var end = Mathf.Clamp(Mathf.FloorToInt(logEnd), 0, _spectrum.Length - 1);
+                var count = end - start + 1;
+
+                float average = 0f;
+                for (int j = start; j <= end; j++)
+                    average += _spectrum[j] * Mathf.Pow(FREQUENCY_BOOST, i);
+                average /= count;
+
+                _bins[i] = average;
+                max = Mathf.Max(max, _bins[i]);
+            }
+
+            for (int i = 0; i < _bins.Length; i++)
+            {
+                if (max <= 0)
+                {
+                    _finalBins[i] = 0f;
+                    continue;
+                }
+                float normalizedValue = _bins[i] / max;
+
+                if (normalizedValue > _finalBins[i])
+                    _finalBins[i] = normalizedValue;
+                else
+                    _finalBins[i] *= DECAY_RATE;
+
+                float sum = _finalBins[i];
+                float count = 1f;
+
+                if (i > 0)
+                {
+                    sum += _finalBins[i - 1] * NEIGHBOR_SMOOTHING;
+                    count += NEIGHBOR_SMOOTHING;
+                }
+
+                if (i < _bins.Length - 1)
+                {
+                    sum += _finalBins[i + 1] * NEIGHBOR_SMOOTHING;
+                    count += NEIGHBOR_SMOOTHING;
+                }
+
+                _finalBins[i] = sum / count;
+            }
         }
+
+        private const int SAMPLE_SIZE = 1024;
+        private const float DECAY_RATE = 0.98f;
+        private const float NEIGHBOR_SMOOTHING = 0.25f;
+        private const float FREQUENCY_BOOST = 1.2f;
     }
 }
