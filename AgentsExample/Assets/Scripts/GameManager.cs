@@ -91,16 +91,15 @@ namespace AgentsExample
         {
             _agent.OnTranscription += OnAgentTranscriptionReceived;
 
-            var connect = StartCoroutine(_agent.Connect());
-            var zoomIn = StartCoroutine(_camera.ZoomIn());
-            yield return zoomIn;
-            yield return connect;
+            yield return _camera.ZoomIn();
+            yield return _agent.Connect();
 
             if (!_agent.IsConnected)
             {
                 yield return StartCoroutine(TransitionToState(GameState.MainMenu));
                 yield break;
             }
+            _screen.AgentVoiceSource = _agent.VoiceAudioSource;
             yield return _screen.OpenWindow();
 
             _controls.ExitRequested += OnExitRequested;
@@ -137,17 +136,7 @@ namespace AgentsExample
 
         private void OnAgentStateChanged(AgentController.State state)
         {
-            switch (state)
-            {
-                case AgentController.State.Connected:
-                    StartCoroutine(_screen.OpenWindow());
-                    _screen.AgentVoiceSource = _agent.VoiceAudioSource;
-                    break;
-                case AgentController.State.Disconnected:
-                case AgentController.State.Error:
-                    StartCoroutine(TransitionToState(GameState.MainMenu));
-                    break;
-            }
+            // TODO: Handle agent disconnect
         }
 
         private void OnAgentTranscriptionReceived(AgentController.Transcription transcription)
