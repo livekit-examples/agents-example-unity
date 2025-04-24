@@ -39,7 +39,7 @@ namespace AgentsExample
 
                 float average = 0f;
                 for (int j = start; j <= end; j++)
-                    average += _spectrum[j] * Mathf.Pow(FREQUENCY_BOOST, i);
+                    average += _spectrum[j];
                 average /= count;
 
                 _bins[i] = average;
@@ -48,9 +48,9 @@ namespace AgentsExample
 
             for (int i = 0; i < _bins.Length; i++)
             {
-                if (max <= 0)
+                if (max <= SILENT_THRESHOLD)
                 {
-                    _finalBins[i] = 0f;
+                    _finalBins[i] *= DECAY_RATE_SILENT;
                     continue;
                 }
                 float normalizedValue = _bins[i] / max;
@@ -81,7 +81,8 @@ namespace AgentsExample
 
         private const int SAMPLE_SIZE = 1024;
         private const float DECAY_RATE = 0.98f;
+        private const float DECAY_RATE_SILENT = 0.85f;
         private const float NEIGHBOR_SMOOTHING = 0.25f;
-        private const float FREQUENCY_BOOST = 1.2f;
+        private const float SILENT_THRESHOLD = 0.0001f;
     }
 }
