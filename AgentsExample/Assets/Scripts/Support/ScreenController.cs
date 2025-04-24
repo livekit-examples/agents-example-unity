@@ -15,6 +15,8 @@ namespace AgentsExample
 
         private Label _transcriptionField;
         private ScrollView _transcriptionScroll;
+        private float _scrollVelocity = 0;
+
         private AudioVisualizer _audioVisualizer;
 
         private Animator _animator;
@@ -59,8 +61,8 @@ namespace AgentsExample
         public void AppendTranscription(string transcription)
         {
             _transcriptionField.text += transcription;
-            _transcriptionScroll.scrollOffset = new Vector2(0, _transcriptionScroll.contentContainer.layout.height);
-            // TODO: fix issue where text is momentarily clipped on the bottom
+            // _scrollHeightTarget = _transcriptionScroll.contentContainer.layout.height;
+            // _scrollVelocity = 0;
         }
 
         /// <summary>
@@ -71,11 +73,33 @@ namespace AgentsExample
             _transcriptionField.text = "";
         }
 
-        public void Update()
+        /// <summary>
+        /// Updates the audio visualizer using the spectrum processor.\
+        /// </summary>
+        private IEnumerator UpdateVisualizer()
         {
-            if (_agentVoiceSource == null) return;
-            _spectrumProcessor.UpdateFrom(_agentVoiceSource);
-            _audioVisualizer.Update(_spectrumProcessor.Processed);
+            while (true)
+            {
+                if (_agentVoiceSource == null) yield break;
+                _spectrumProcessor.UpdateFrom(_agentVoiceSource);
+                _audioVisualizer.Update(_spectrumProcessor.Processed);
+            }
+        }
+
+        /// <summary>
+        /// Maintains scroll position at the bottom as transcriptions are appended.
+        /// </summary>
+        private IEnumerator ScrollToBottom()
+        {
+            while (true)
+            {
+                float currentY = _transcriptionScroll.scrollOffset.y;
+                float targetY = _transcriptionScroll.contentContainer.layout.height - _transcriptionScroll.layout.height;
+
+                float newY = Mathf.SmoothDamp(currentY, targetY, ref _scrollVelocity, SCROLL_SMOOTH_TIME);
+                _transcriptionScroll.scrollOffset = new Vector2(0, newY);
+                yield return null;
+            }
         }
 
         private void OnEnable()
@@ -87,6 +111,9 @@ namespace AgentsExample
             _transcriptionField = root.Q<Label>("TranscriptionField");
             _transcriptionScroll = root.Q<ScrollView>("TranscriptionScroll");
             _audioVisualizer = root.Q<AudioVisualizer>();
+
+            StartCoroutine(ScrollToBottom());
+            StartCoroutine(UpdateVisualizer());
         }
 
         private IEnumerator AnimateToState(string stateName)
@@ -99,5 +126,7 @@ namespace AgentsExample
             while (_animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1f)
                 yield return null;
         }
+
+        private const float SCROLL_SMOOTH_TIME = 0.25f;
     }
 }
