@@ -470,8 +470,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64a0b77d40b0c4d1dbb2872e5e72ed61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _openSound: {fileID: 0}
-  _closeSound: {fileID: 0}
+  _openSound: {fileID: 8300000, guid: 4a37250e6ba8b4a2aa59be11cc588704, type: 3}
+  _closeSound: {fileID: 8300000, guid: 7504198084f1943de95dad5fa963353c, type: 3}
 --- !u!95 &1019439974
 Animator:
   serializedVersion: 7
