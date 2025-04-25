@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Configuration
   m_EditorClassIdentifier: 
   ServerUrl: ws://localhost:7880
-  Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDU2MjY2MTMsImlzcyI6ImRldmtleSIsIm5hbWUiOiJ1bml0eSIsIm5iZiI6MTc0NTI4MTAxMywic3ViIjoidW5pdHkiLCJ2aWRlbyI6eyJjYW5VcGRhdGVPd25NZXRhZGF0YSI6dHJ1ZSwicm9vbSI6InRlc3Rfcm9vbSIsInJvb21Kb2luIjp0cnVlfX0.YfLKFnybL-K_XCzfZOtMBjSrbsGwK34cUXgqzvy95oA
+  Token: 
