@@ -66,6 +66,10 @@ namespace AgentsExample
 
         private IEnumerator EnterMainMenu()
         {
+            // Obtain microphone permission in advance to avoid interrupting the user later.
+            // In a real app, you would want to provide some feedback to the user if permission is denied.
+            yield return ObtainMicrophonePermission();
+
             _overlay.TalkRequested += OnTalkRequested;
             _overlay.PresentMainMenu();
             yield break;
@@ -150,6 +154,16 @@ namespace AgentsExample
             _screen.AppendTranscription(transcription.Text);
         }
 
+        static private IEnumerator ObtainMicrophonePermission()
+        {
+            var level = UserAuthorization.Microphone;
+            yield return Application.RequestUserAuthorization(level);
+            if (!Application.HasUserAuthorization(level))
+            {
+                Debug.LogError("Unable to obtain microphone permission");
+                yield break;
+            }
+        }
         #endregion
     }
 }

@@ -4,7 +4,7 @@
         <engine:Button tooltip="Mute/Unmute" name="Mute" class="view--controls__button view--controls__button--mute" />
         <engine:Button tooltip="Exit" name="Exit" class="view--controls__button view--controls__button--exit" />
     </engine:VisualElement>
-    <engine:VisualElement class="view view--main-menu view--visible">
+    <engine:VisualElement name="VisualElement" class="view view--main-menu">
         <engine:Label text="Agents Demo" class="view--main-menu__heading" />
         <engine:Button text="Talk to Agent" name="Talk" class="view--main-menu__talk" />
     </engine:VisualElement>
