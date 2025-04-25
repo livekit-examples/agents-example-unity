@@ -56,5 +56,11 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "AgentsExample.sln"
+    "dotnet.defaultSolution": "AgentsExample.sln",
+    "cSpell.words": [
+        "Behaviour",
+        "Blackman",
+        "Mathf",
+        "scriptable"
+    ]
 }
