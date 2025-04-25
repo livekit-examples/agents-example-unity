@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 using System;
+using System.Collections;
 
 namespace AgentsExample
 {
@@ -54,13 +55,11 @@ namespace AgentsExample
 
         private void Configure()
         {
-            // Configure controls view
             _muteButton = _controlsRoot.Q<Button>("Mute");
             _exitButton = _controlsRoot.Q<Button>("Exit");
             _muteButton.clicked += () => MuteRequested?.Invoke();
             _exitButton.clicked += () => ExitRequested?.Invoke();
 
-            // Configure main menu view
             _talkButton = _mainMenuRoot.Q<Button>("Talk");
             _talkButton.clicked += () => TalkRequested?.Invoke();
         }
@@ -90,8 +89,15 @@ namespace AgentsExample
 
         private void HideView(VisualElement view)
         {
-            view.style.display = DisplayStyle.None;
             view.RemoveFromClassList(CLASS_VISIBLE);
+            StartCoroutine(HideAfterTransition(view));
+        }
+
+        private IEnumerator HideAfterTransition(VisualElement view)
+        {
+            // TODO: Wait for transition end event instead of using a hardcoded delay.
+            yield return new WaitForSeconds(1f);
+            view.style.display = DisplayStyle.None;
         }
 
         private const string CLASS_VISIBLE = CLASS_PREFIX + "visible";

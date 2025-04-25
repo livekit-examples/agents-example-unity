@@ -110,6 +110,8 @@ namespace AgentsExample
 
         private IEnumerator ExitTalk()
         {
+            _overlay.DismissAll();
+
             _agent.OnReadyStateChange -= OnAgentReadyStateChanged;
             _agent.OnTranscription -= OnAgentTranscriptionReceived;
             _agent.EndConversation();
@@ -121,7 +123,6 @@ namespace AgentsExample
             _overlay.ExitRequested -= OnExitRequested;
             _overlay.MuteRequested -= OnMuteRequested;
 
-            _overlay.DismissAll();
             yield return _camera.ZoomOut();
         }
 
