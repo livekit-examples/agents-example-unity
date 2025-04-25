@@ -8,18 +8,6 @@ namespace AgentsExample
     public class CameraController : MonoBehaviour
     {
         private Animator _animator;
-        // private bool _zoomedIn = false;
-
-        // private static int ZOOMED_IN_STATE = Animator.StringToHash("ZoomedIn");
-        // private static int ZOOMED_OUT_STATE = Animator.StringToHash("ZoomedOut");
-
-        // // public bool ZoomedIn {
-        // //     get => _zoomedIn;
-        // //     set {
-        // //         _animator.CrossFade(_zoomedIn ? ZOOMED_IN_STATE : ZOOMED_OUT_STATE, 0.25f);
-        // //         _zoomedIn = value;
-        // //     }
-        // // }
 
         private void Awake()
         {
