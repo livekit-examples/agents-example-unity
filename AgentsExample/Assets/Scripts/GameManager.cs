@@ -92,29 +92,32 @@ namespace AgentsExample
             _agent.OnTranscription += OnAgentTranscriptionReceived;
 
             yield return _camera.ZoomIn();
-            yield return _agent.Connect();
+            yield return _agent.StartConversation();
 
-            if (!_agent.IsConnected)
+            if (!_agent.IsReady)
             {
                 yield return StartCoroutine(TransitionToState(GameState.MainMenu));
                 yield break;
             }
-            _screen.AgentVoiceSource = _agent.VoiceAudioSource;
+            _agent.OnReadyStateChange += OnAgentReadyStateChanged;
+            _screen.AgentVoiceSource = _agent.AgentVoiceSource;
             yield return _screen.OpenWindow();
 
             _controls.ExitRequested += OnExitRequested;
             _controls.MuteRequested += OnMuteRequested;
-            _controls.IsMicrophoneMuted = _agent.IsMicrophoneMuted;
+            _controls.IsMicrophoneMuted = _agent.MicrophoneSource.mute;
             _controls.Present();
         }
 
         private IEnumerator ExitTalk()
         {
+            _agent.OnReadyStateChange -= OnAgentReadyStateChanged;
             _agent.OnTranscription -= OnAgentTranscriptionReceived;
-            _agent.Disconnect();
+            _agent.EndConversation();
 
             yield return _screen.CloseWindow();
             _screen.AgentVoiceSource = null;
+            _screen.ClearTranscription();
 
             _controls.ExitRequested -= OnExitRequested;
             _controls.MuteRequested -= OnMuteRequested;
@@ -130,18 +133,19 @@ namespace AgentsExample
 
         private void OnMuteRequested()
         {
-            _agent.IsMicrophoneMuted = !_agent.IsMicrophoneMuted;
-            _controls.IsMicrophoneMuted = _agent.IsMicrophoneMuted;
+            _agent.MicrophoneSource.mute = !_agent.MicrophoneSource.mute;
+            _controls.IsMicrophoneMuted = _agent.MicrophoneSource.mute;
         }
 
-        private void OnAgentStateChanged(AgentController.State state)
+        private void OnAgentReadyStateChanged(bool isReady)
         {
-            // TODO: Handle agent disconnect
+            if (!isReady)
+                StartCoroutine(TransitionToState(GameState.MainMenu));
         }
 
         private void OnAgentTranscriptionReceived(AgentController.Transcription transcription)
         {
-            if (transcription.IsNewStream)
+            if (transcription.ClearPrevious)
                 _screen.ClearTranscription();
             _screen.AppendTranscription(transcription.Text);
         }

@@ -4,28 +4,20 @@ using LiveKit;
 using LiveKit.Proto;
 using System;
 using Debug = UnityEngine.Debug;
+using System.Collections.Generic;
 
 namespace AgentsExample
 {
     public class AgentController : MonoBehaviour
     {
-        public enum State
-        {
-            Disconnected,
-            Connected,
-            Error
-        }
-
         public struct Transcription
         {
             public string Text;
-            public bool IsNewStream;
+            public bool ClearPrevious;
         }
 
-        public Action<State> OnStateChanged;
+        public Action<bool> OnReadyStateChange;
         public Action<Transcription> OnTranscription;
-        public bool IsConnected => _room != null;
-        public AudioSource VoiceAudioSource => _agentVoiceOutput;
 
         /// <summary>
         /// The scriptable object that contains the configuration for connecting to
@@ -35,63 +27,102 @@ namespace AgentsExample
         private Configuration _configuration;
 
         /// <summary>
-        /// The audio source that will play the agent's voice in the scene.
+        /// The location of where the agent's voice will be played.
         /// </summary>
         [SerializeField]
-        private AudioSource _agentVoiceOutput;
+        private Transform _agentLocation;
+
+        /// <summary>
+        /// The audio source for the microphone.
+        /// </summary>
+        public AudioSource MicrophoneSource =>
+            _audioObjects.TryGetValue(MICROPHONE_ID, out var audioObject)
+                ? audioObject.GetComponent<AudioSource>()
+                : null;
+
+        /// <summary>
+        /// The audio source for the agent's voice.
+        /// </summary>
+        public AudioSource AgentVoiceSource =>
+            _audioObjects.TryGetValue(AGENT_VOICE_ID, out var audioObject)
+                ? audioObject.GetComponent<AudioSource>()
+                : null;
+
+        /// <summary>
+        /// Whether the agent is ready to engage in conversation.
+        /// </summary>
+        public bool IsReady => CurrentState == State.Ready;
+
+        private enum State
+        {
+            Initial,
+            Starting,
+            Ready
+        }
 
         private Room _room;
-        //private State _state = State.Disconnected;
+        private State _state;
+        private Dictionary<string, GameObject> _audioObjects = new();
+        private List<RtcAudioSource> _rtcAudioSources = new();
 
-        private AudioSource _microphoneSource;
-        private RtcAudioSource _agentVoiceRtcSource;
-        private RtcAudioSource _microphoneRtcSource;
+        private State CurrentState
+        {
+            get => _state;
+            set
+            {
+                _state = value;
+                OnReadyStateChange?.Invoke(_state == State.Ready);
+            }
+        }
 
-        // private State CurrentState
-        // {
-        //     get => _state;
-        //     set
-        //     {
-        //         _state = value;
-        //         OnStateChanged?.Invoke(_state);
-        //     }
-        // }
+        #region Start Conversation
 
-        public IEnumerator Connect()
+        /// <summary>
+        /// Begins a conversation with the agent.
+        /// </summary>
+        /// <remarks>
+        /// The operation doesn't complete until <see cref="IsReady"/> is <c>true</c> or an error occurs.
+        /// </remarks>
+        public IEnumerator StartConversation()
         {
             if (!HasValidConfiguration())
             {
                 Debug.LogError("Server URL and token must be set");
-                //CurrentState = State.Error;
                 yield break;
             }
+            EndConversation();
 
-            Disconnect();
-            CreateRoom();
+            CurrentState = State.Starting;
+
             yield return OpenConnection();
+            if (CurrentState != State.Starting) yield break;
+
+            yield return PublishMicrophone();
+            if (CurrentState != State.Starting) yield break;
+
+            yield return WaitForAgent();
+            if (CurrentState != State.Starting) yield break;
+            CurrentState = State.Ready;
         }
 
-        public void Disconnect()
+        private IEnumerator WaitForAgent()
         {
-            if (_room == null) return;
-            _room.Disconnect();
-            _room = null;
-        }
-
-        private void CreateRoom()
-        {
-            _room = new Room();
-            _room.ParticipantConnected += OnParticipantConnected;
-            _room.ParticipantMetadataChanged += OnParticipantMetadataChanged;
-            _room.TrackSubscribed += OnTrackSubscribed;
-            _room.TrackUnsubscribed += OnTrackUnsubscribed;
-
-            _room.RegisterTextStreamHandler(CHAT_TOPIC, OnChatStreamOpened);
-            _room.RegisterTextStreamHandler(TRANSCRIPTION_TOPIC, OnTranscriptionStreamOpened);
+            var timeout = Time.realtimeSinceStartup + AGENT_JOIN_TIMEOUT;
+            yield return new WaitUntil(() =>
+                AgentVoiceSource != null || Time.realtimeSinceStartup >= timeout
+            );
+            if (AgentVoiceSource != null) yield break;
+            Debug.LogError($"Agent voice not published within timeout window");
+            EndConversation();
         }
 
         private IEnumerator OpenConnection()
         {
+            _room = new Room();
+            _room.TrackSubscribed += OnTrackSubscribed;
+            _room.TrackUnsubscribed += OnTrackUnsubscribed;
+            _room.RegisterTextStreamHandler(TRANSCRIPTION_TOPIC, OnTranscriptionStreamOpened);
+
             var options = new LiveKit.RoomOptions();
             // Optionally set addition room options before connecting
 
@@ -102,24 +133,20 @@ namespace AgentsExample
             if (connect.IsError)
             {
                 Debug.LogError($"Failed to connect to room");
-                //CurrentState = State.Error;
-                _room = null;
+                EndConversation();
                 yield break;
             }
-            //CurrentState = State.Connected;
-
-            yield return PublishMicrophone();
+            Debug.Log($"Connected to room");
         }
 
         public IEnumerator PublishMicrophone()
         {
-            if (_microphoneSource == null)
-                 _microphoneSource = gameObject.AddComponent<AudioSource>();
+            GameObject audObject = new GameObject(MICROPHONE_ID);
+            _audioObjects[MICROPHONE_ID] = audObject;
 
-            var rtcSource = new MicrophoneSource(_microphoneSource);
+            var rtcSource = new MicrophoneSource(audObject.AddComponent<AudioSource>());
             rtcSource.Configure(Microphone.devices[0], true, 2, (int)RtcAudioSource.DefaultMirophoneSampleRate);
-
-            var track = LocalAudioTrack.CreateAudioTrack("microphone", rtcSource, _room);
+            var track = LocalAudioTrack.CreateAudioTrack(MICROPHONE_ID, rtcSource, _room);
 
             var options = new TrackPublishOptions();
             options.AudioEncoding = new AudioEncoding();
@@ -132,70 +159,69 @@ namespace AgentsExample
             if (publish.IsError)
             {
                 Debug.LogError("Failed to published microphone track");
+                EndConversation();
                 yield break;
             }
-
-            _microphoneRtcSource = rtcSource;
+            _rtcAudioSources.Add(rtcSource);
             yield return rtcSource.PrepareAndStart();
         }
+        #endregion
+
+        #region End Conversation
 
         /// <summary>
-        /// Whether the microphone is muted.
+        /// Ends the conversation with the agent.
         /// </summary>
-        public bool IsMicrophoneMuted
+        public void EndConversation()
         {
-            get => _microphoneSource?.mute ?? false;
-            set
-            {
-                if (_microphoneSource == null) return;
-                _microphoneSource.mute = value;
-            }
-        }
+            _room?.Disconnect();
+            _room = null;
 
-        private void OnParticipantConnected(Participant participant)
-        {
-            if (!IsAgent(participant)) return;
-            Debug.Log($"Agent connected");
-        }
-
-        private void OnParticipantMetadataChanged(Participant participant)
-        {
-            if (!IsAgent(participant)) return;
-            if (participant.Attributes.ContainsKey(AGENT_STATE_KEY))
+            foreach (var item in _audioObjects)
             {
-                string state = participant.Attributes[AGENT_STATE_KEY];
-                Debug.Log($"Agent state: {state}");
-                return;
+                var source = item.Value.GetComponent<AudioSource>();
+                source.Stop();
+                Destroy(item.Value);
             }
+            _audioObjects.Clear();
+            foreach (var item in _rtcAudioSources)
+                item.Stop();
+            _rtcAudioSources.Clear();
+
+            CurrentState = State.Initial;
         }
+        #endregion
+
+        #region Event Handlers
 
         private void OnTrackSubscribed(IRemoteTrack track, RemoteTrackPublication publication, RemoteParticipant participant)
         {
-            Debug.Log($"OnTrackSubscribed: {track.Name} from {participant.Identity}");
             if (!(track is RemoteAudioTrack audioTrack)) return;
-
-            if (_agentVoiceRtcSource != null)
-                Debug.LogError("Already subscribed to agent voice");
-
-            if (_agentVoiceOutput == null)
+            if (_audioObjects.ContainsKey(AGENT_VOICE_ID))
             {
-                Debug.LogError("Agent voice output is not set");
+                Debug.LogWarning("Agent voice already subscribed");
                 return;
             }
-            // TODO: How to reject the track if the audio source is not set?
-            var stream = new AudioStream(audioTrack, _agentVoiceOutput);
-            _agentVoiceRtcSource = stream.AudioSource;
+            GameObject audObject = new GameObject(AGENT_VOICE_ID);
+            var source = audObject.AddComponent<AudioSource>();
+            var stream = new AudioStream(audioTrack, source);
+            _audioObjects[AGENT_VOICE_ID] = audObject;
+            _rtcAudioSources.Add(stream.AudioSource);
+            audObject.transform.SetParent(_agentLocation);
         }
 
         private void OnTrackUnsubscribed(IRemoteTrack track, RemoteTrackPublication publication, RemoteParticipant participant)
         {
-            Debug.Log($"OnTrackUnsubscribed: {track.Name} from {participant.Identity}");
             if (!(track is RemoteAudioTrack)) return;
-            if (_agentVoiceRtcSource == null)
-                Debug.LogError("Not subscribed to agent voice");
-
-            _agentVoiceRtcSource.Stop();
-            _agentVoiceRtcSource = null;
+            var audObject = _audioObjects[AGENT_VOICE_ID];
+            if (audObject != null)
+            {
+                var source = audObject.GetComponent<AudioSource>();
+                source.Stop();
+                Destroy(audObject);
+            }
+            _audioObjects.Remove(AGENT_VOICE_ID);
+            EndConversation();
         }
 
         private void OnTranscriptionStreamOpened(TextStreamReader reader, string Identity)
@@ -203,17 +229,13 @@ namespace AgentsExample
             Debug.Log($"Transcription stream opened: {Identity}");
             StartCoroutine(HandleTranscriptionStream(reader));
         }
+        #endregion
 
-        private void OnChatStreamOpened(TextStreamReader reader, string Identity)
-        {
-            Debug.Log($"Chat stream opened: {Identity}");
-            StartCoroutine(HandleChatStream(reader));
-        }
-
+        #region Stream Handlers
         private IEnumerator HandleTranscriptionStream(TextStreamReader reader)
         {
             var readIncremental = reader.ReadIncremental();
-            var isNewStream = true;
+            var ClearPrevious = true;
 
             while (!readIncremental.IsEos)
             {
@@ -223,30 +245,15 @@ namespace AgentsExample
                 var transcription = new Transcription
                 {
                     Text = readIncremental.Text,
-                    IsNewStream = isNewStream
+                    ClearPrevious = ClearPrevious
                 };
-                Debug.Log($"Agent: '{transcription.Text}'");
                 OnTranscription?.Invoke(transcription);
-                isNewStream = false;
+                ClearPrevious = false;
             }
         }
+        #endregion
 
-        private IEnumerator HandleChatStream(TextStreamReader reader)
-        {
-            var readIncremental = reader.ReadIncremental();
-            while (!readIncremental.IsEos)
-            {
-                readIncremental.Reset();
-                yield return readIncremental;
-                Debug.Log($"User: '{readIncremental.Text}'");
-            }
-        }
-
-        private static bool IsAgent(Participant participant)
-        {
-            // TODO: Use participant.Kind once added
-            return participant.Name.StartsWith("agent-");
-        }
+        #region Helper Methods
 
         private bool HasValidConfiguration()
         {
@@ -254,9 +261,14 @@ namespace AgentsExample
                    !string.IsNullOrEmpty(_configuration.ServerUrl) &&
                    !string.IsNullOrEmpty(_configuration.Token);
         }
+        #endregion
 
-        private const string AGENT_STATE_KEY = "lk.agent.state";
-        private const string CHAT_TOPIC = "lk.chat";
+        #region Constants
+
+        private const string AGENT_VOICE_ID = "AgentVoiceOutput";
+        private const string MICROPHONE_ID = "MicrophoneInput";
+        private const float AGENT_JOIN_TIMEOUT = 15f;
         private const string TRANSCRIPTION_TOPIC = "lk.transcription";
+        #endregion
     }
 }
