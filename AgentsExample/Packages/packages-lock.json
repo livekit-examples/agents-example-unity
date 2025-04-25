@@ -38,8 +38,8 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.services.analytics": "1.0.4",
-        "com.unity.ugui": "1.0.0"
+        "com.unity.ugui": "1.0.0",
+        "com.unity.services.analytics": "1.0.4"
       },
       "url": "https://packages.unity.com"
     },
@@ -214,9 +214,9 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.androidjni": "1.0.0",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
-        "com.unity.modules.androidjni": "1.0.0"
+        "com.unity.modules.unitywebrequest": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -318,10 +318,11 @@
       "url": "https://packages.unity.com"
     },
     "io.livekit.livekit-sdk": {
-      "version": "file:/Users/jacobgelman/Developer/Repos/client-sdk-unity",
+      "version": "https://github.com/livekit/client-sdk-unity.git#ladvoc/add-apm",
       "depth": 0,
-      "source": "local",
-      "dependencies": {}
+      "source": "git",
+      "dependencies": {},
+      "hash": "bbad26ac5d4c512f783c7cef36020c1058dbdadc"
     },
     "com.unity.modules.accessibility": {
       "version": "1.0.0",
