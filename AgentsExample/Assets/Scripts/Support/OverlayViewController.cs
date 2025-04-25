@@ -1,33 +1,46 @@
 using UnityEngine;
 using UnityEngine.UIElements;
+using System;
 
 namespace AgentsExample
 {
     /// <summary>
-    /// Base class for UI overlay views.
+    /// Controller for UI overlay views.
     /// </summary>
     [RequireComponent(typeof(UIDocument))]
     public class OverlayViewController : MonoBehaviour
     {
-        private VisualElement _root;
+        private VisualElement _controlsRoot;
+        private VisualElement _mainMenuRoot;
+        private Button _muteButton;
+        private Button _exitButton;
+        private Button _talkButton;
 
-        protected VisualElement RootElement => _root;
-        public virtual string Name { get; }
+        public event Action MuteRequested;
+        public event Action ExitRequested;
+        public event Action TalkRequested;
+
+        public bool IsMicrophoneMuted
+        {
+            get => _muteButton.ClassListContains("muted");
+            set
+            {
+                if (value)
+                    _muteButton.AddToClassList("muted");
+                else
+                    _muteButton.RemoveFromClassList("muted");
+            }
+        }
 
         private void OnEnable()
         {
-            if (string.IsNullOrEmpty(Name))
-            {
-                Debug.LogError("View name is not set");
-                return;
-            }
-
             var document = GetComponent<UIDocument>().rootVisualElement;
-            _root = document.Q<VisualElement>(className: CLASS_PREFIX + Name);
+            _controlsRoot = document.Q<VisualElement>(className: CLASS_PREFIX + "controls");
+            _mainMenuRoot = document.Q<VisualElement>(className: CLASS_PREFIX + "main-menu");
 
-            if (_root == null)
+            if (_controlsRoot == null || _mainMenuRoot == null)
             {
-                Debug.LogError("View not found in UI document");
+                Debug.LogError("One or more views not found in UI document");
                 return;
             }
             Configure();
@@ -35,22 +48,50 @@ namespace AgentsExample
 
         private void OnDisable()
         {
-            if (_root == null) return;
-            _root = null;
+            _controlsRoot = null;
+            _mainMenuRoot = null;
         }
 
-        protected virtual void Configure() {}
-
-        public void Present()
+        private void Configure()
         {
-            _root.style.display = DisplayStyle.Flex;
-            _root.AddToClassList(CLASS_VISIBLE);
+            // Configure controls view
+            _muteButton = _controlsRoot.Q<Button>("Mute");
+            _exitButton = _controlsRoot.Q<Button>("Exit");
+            _muteButton.clicked += () => MuteRequested?.Invoke();
+            _exitButton.clicked += () => ExitRequested?.Invoke();
+
+            // Configure main menu view
+            _talkButton = _mainMenuRoot.Q<Button>("Talk");
+            _talkButton.clicked += () => TalkRequested?.Invoke();
         }
 
-        public void Dismiss()
+        public void PresentControls()
         {
-            _root.RemoveFromClassList(CLASS_VISIBLE);
-            _root.style.display = DisplayStyle.None;
+            ShowView(_controlsRoot, _mainMenuRoot);
+        }
+
+        public void PresentMainMenu()
+        {
+            ShowView(_mainMenuRoot, _controlsRoot);
+        }
+
+        public void DismissAll()
+        {
+            HideView(_controlsRoot);
+            HideView(_mainMenuRoot);
+        }
+
+        private void ShowView(VisualElement viewToShow, VisualElement viewToHide)
+        {
+            viewToShow.style.display = DisplayStyle.Flex;
+            viewToShow.AddToClassList(CLASS_VISIBLE);
+            HideView(viewToHide);
+        }
+
+        private void HideView(VisualElement view)
+        {
+            view.style.display = DisplayStyle.None;
+            view.RemoveFromClassList(CLASS_VISIBLE);
         }
 
         private const string CLASS_VISIBLE = CLASS_PREFIX + "visible";

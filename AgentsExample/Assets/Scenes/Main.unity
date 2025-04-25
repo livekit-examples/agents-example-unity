@@ -696,8 +696,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _agent: {fileID: 1867540473}
-  _mainMenu: {fileID: 1853273499}
-  _controls: {fileID: 1853273500}
+  _overlay: {fileID: 1853273498}
   _screen: {fileID: 1019439973}
   _camera: {fileID: 1263918067}
 --- !u!1 &1853273495
@@ -710,8 +709,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1853273497}
   - component: {fileID: 1853273496}
-  - component: {fileID: 1853273500}
-  - component: {fileID: 1853273499}
+  - component: {fileID: 1853273498}
   m_Layer: 5
   m_Name: OverlayUI
   m_TagString: Untagged
@@ -753,7 +751,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1853273499
+--- !u!114 &1853273498
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -762,19 +760,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1853273495}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 189f5ac5ec7dd47a6aaeca626384c5a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &1853273500
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1853273495}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 226789e8454e34ee2aa0c0f2289c9269, type: 3}
+  m_Script: {fileID: 11500000, guid: b5482ceee94d74191b662c5d71fe8498, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1867540472

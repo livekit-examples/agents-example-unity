@@ -11,8 +11,7 @@ namespace AgentsExample
         #region Dependencies
 
         [SerializeField] private AgentController _agent;
-        [SerializeField] private MainMenuController _mainMenu;
-        [SerializeField] private AgentControlsController _controls;
+        [SerializeField] private OverlayViewController _overlay;
         [SerializeField] private ScreenController _screen;
         [SerializeField] private CameraController _camera;
 
@@ -67,15 +66,15 @@ namespace AgentsExample
 
         private IEnumerator EnterMainMenu()
         {
-            _mainMenu.TalkRequested += OnTalkRequested;
-            _mainMenu.Present();
+            _overlay.TalkRequested += OnTalkRequested;
+            _overlay.PresentMainMenu();
             yield break;
         }
 
         private IEnumerator ExitMainMenu()
         {
-            _mainMenu.TalkRequested -= OnTalkRequested;
-            _mainMenu.Dismiss();
+            _overlay.TalkRequested -= OnTalkRequested;
+            _overlay.DismissAll();
             yield break;
         }
 
@@ -103,10 +102,10 @@ namespace AgentsExample
             _screen.AgentVoiceSource = _agent.AgentVoiceSource;
             yield return _screen.OpenWindow();
 
-            _controls.ExitRequested += OnExitRequested;
-            _controls.MuteRequested += OnMuteRequested;
-            _controls.IsMicrophoneMuted = _agent.MicrophoneSource.mute;
-            _controls.Present();
+            _overlay.ExitRequested += OnExitRequested;
+            _overlay.MuteRequested += OnMuteRequested;
+            _overlay.IsMicrophoneMuted = _agent.MicrophoneSource.mute;
+            _overlay.PresentControls();
         }
 
         private IEnumerator ExitTalk()
@@ -119,10 +118,10 @@ namespace AgentsExample
             _screen.AgentVoiceSource = null;
             _screen.ClearTranscription();
 
-            _controls.ExitRequested -= OnExitRequested;
-            _controls.MuteRequested -= OnMuteRequested;
-            _controls.Dismiss();
+            _overlay.ExitRequested -= OnExitRequested;
+            _overlay.MuteRequested -= OnMuteRequested;
 
+            _overlay.DismissAll();
             yield return _camera.ZoomOut();
         }
 
@@ -134,7 +133,7 @@ namespace AgentsExample
         private void OnMuteRequested()
         {
             _agent.MicrophoneSource.mute = !_agent.MicrophoneSource.mute;
-            _controls.IsMicrophoneMuted = _agent.MicrophoneSource.mute;
+            _overlay.IsMicrophoneMuted = _agent.MicrophoneSource.mute;
         }
 
         private void OnAgentReadyStateChanged(bool isReady)
