@@ -1,6 +1,6 @@
 # Agents Example Unity
 
-This example demonstrates building a frontend for a voice  agent built with [LiveKit Agents](https://docs.livekit.io/agents/overview/) using the [LiveKit Unity SDK](https://github.com/livekit/client-sdk-unity).
+This example showcases how to integrate a voice agent built with [LiveKit Agents](https://docs.livekit.io/agents/overview/) into a Unity project using the [LiveKit Unity SDK](https://github.com/livekit/client-sdk-unity), attaching the agent's voice and transcriptions to a world object.
 
 ## Quick start
 
@@ -12,7 +12,10 @@ This example demonstrates building a frontend for a voice  agent built with [Liv
 git clone https://github.com/livekit-examples/agents-example-unity.git
 ```
 
-3. **Add project to Unity Hub**: From the Unity Hub, click "Add" and select "Add project from disk." Navigate to the cloned repository, and choose the "AgentsExample" subdirectory (this is the Unity project root).
+3. **Add Project to Unity Hub**: From the Unity Hub, click "Add" and select "Add project from disk." Navigate to the cloned repository, and choose the "AgentsExample" subdirectory (this is the Unity project root).
+
+> [!NOTE]
+> When opening the project for the first time, it may take a few minutes to resolve the LiveKit SDK package.
 
 4. **Configuration**: With the project open, locate [`Configuration.asset`](/AgentsExample/Assets/Configuration.asset) in the Assets directory. In the Inspector panel, modify the values of `ServerUrl` and `Token` according to your configuration.
 
