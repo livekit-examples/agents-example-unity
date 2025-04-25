@@ -4,9 +4,9 @@ using System.Collections;
 namespace AgentsExample
 {
     /// <summary>
-    /// Simple state machine for the game.
+    /// Simple state machine for controlling the demo.
     /// </summary>
-    public class GameManager : MonoBehaviour
+    public class DemoManager : MonoBehaviour
     {
         #region Dependencies
 
