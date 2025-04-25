@@ -17,7 +17,7 @@ namespace AgentsExample
 
         #endregion
 
-        #region State management
+        #region State Management
 
         private GameState _currentState;
         public enum GameState { Initial, MainMenu, Talk }
@@ -62,7 +62,7 @@ namespace AgentsExample
         }
         #endregion
 
-        #region Main menu state
+        #region Main Menu State
 
         private IEnumerator EnterMainMenu()
         {
@@ -84,7 +84,7 @@ namespace AgentsExample
         }
         #endregion
 
-        #region Talk state
+        #region Talk State
 
         private IEnumerator EnterTalk()
         {
