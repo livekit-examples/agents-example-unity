@@ -4,7 +4,7 @@ This example showcases how to integrate a voice agent built with [LiveKit Agents
 
 ## Quick start
 
-1. **Setup your agent**: You can follow the [Voice AI Quickstart](https://docs.livekit.io/agents/start/voice-ai/) to build a simple voice agent in less than 10 minutes.
+1. **Setup your agent**: If you don't already have an agent to work with, you can follow the [Voice AI Quickstart](https://docs.livekit.io/agents/start/voice-ai/) to build a simple voice agent in less than 10 minutes.
 
 2. **Clone repository**:
 
@@ -17,7 +17,7 @@ git clone https://github.com/livekit-examples/agents-example-unity.git
 > [!NOTE]
 > When opening the project for the first time, it may take a few minutes to resolve the LiveKit SDK package.
 
-4. **Configuration**: With the project open, locate [`Configuration.asset`](/AgentsExample/Assets/Configuration.asset) in the Assets directory. In the Inspector panel, modify the values of `ServerUrl` and `Token` according to your configuration.
+4. **Sandbox Token Server**: Create a new [Sandbox Token Server](https://cloud.livekit.io/projects/p_/sandbox/templates/token-server) for your LiveKit Cloud project and take note of its ID. With the Unity project open, select [`SandboxAuth`](/AgentsExample/Assets/SandboxAuth.asset) in the "Assets" directory. From the inspector, fill in the ID of your sandbox token server.
 
 5. **Enter Play Mode**: Click the play button at the top of the Unity Editor to start the application.
 
