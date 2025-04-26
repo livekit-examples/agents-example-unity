@@ -21,6 +21,10 @@ git clone https://github.com/livekit-examples/agents-example-unity.git
 
 5. **Enter Play Mode**: Click the play button at the top of the Unity Editor to start the application.
 
+## Token generation
+
+In a production environment, you will be responsible for developing a solution to [generate tokens for your users](https://docs.livekit.io/home/server/generating-tokens/) which is integrated with your authentication solution. You should disable your sandbox token server and modify [`TokenService.cs`](/AgentsExample/Assets/Scripts/TokenService.cs) to use your own token server.
+
 ## Development
 
 This project is configured to work out-of-the-box in Visual Studio Code for development, providing IntelliSense and the ability to attach to the Unity debugger. To use this configuration, open the "AgentsExample" directory in Visual Studio Code. Install the recommended extensions when prompted.
