@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01c2dc0c63f1c42be9793943f10fae41, type: 3}
-  m_Name: Configuration
-  m_EditorClassIdentifier: 
-  ServerUrl: ws://localhost:7880
-  Token: 
+  m_Script: {fileID: 0}
+  m_Name: SandboxAuth
+  m_EditorClassIdentifier: Assembly-CSharp:AgentsExample:SandboxAuth
+  _sandboxId: 

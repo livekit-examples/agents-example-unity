@@ -157,6 +157,7 @@ GameObject:
   - component: {fileID: 1641850748}
   - component: {fileID: 1641850747}
   - component: {fileID: 1641850746}
+  - component: {fileID: 1641850749}
   m_Layer: 0
   m_Name: Scripts
   m_TagString: Untagged
@@ -176,7 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e746e2656df344def848aa0f3dc97a66, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _configuration: {fileID: 11400000, guid: 3b52e091e5c144faa801afc2ce8c8763, type: 2}
+  _tokenService: {fileID: 1641850749}
   _agentLocation: {fileID: 807412974}
 --- !u!114 &1641850747
 MonoBehaviour:
@@ -209,6 +210,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1641850749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1641850745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26c416131b352409190bed0151d21306, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _config: {fileID: 11400000, guid: 345eed2a5033b47a3859d07d87a0add2, type: 2}
 --- !u!114 &1853273498 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5605776097734489632, guid: 1f6bddd6fd94648abb4472d38a8871f7, type: 3}

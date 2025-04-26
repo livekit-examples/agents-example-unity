@@ -19,12 +19,8 @@ namespace AgentsExample
         public Action<bool> OnReadyStateChange;
         public Action<Transcription> OnTranscription;
 
-        /// <summary>
-        /// The scriptable object that contains the configuration for connecting to
-        /// the LiveKit server.
-        /// </summary>
         [SerializeField]
-        private Configuration _configuration;
+        private TokenService _tokenService;
 
         /// <summary>
         /// The location of where the agent's voice will be played.
@@ -85,13 +81,6 @@ namespace AgentsExample
         /// </remarks>
         public IEnumerator StartConversation()
         {
-            if (!HasValidConfiguration())
-            {
-                Debug.LogError("Server URL and token must be set");
-                yield break;
-            }
-            EndConversation();
-
             CurrentState = State.Starting;
 
             yield return OpenConnection();
@@ -118,16 +107,37 @@ namespace AgentsExample
 
         private IEnumerator OpenConnection()
         {
+            System.Random random = new System.Random();
+
+            // Generate a random room name to ensure a new room is created
+            // In a production app, you may want a more reliable process for ensuring agent dispatch
+            var roomName = $"room-{random.Next(1000, 10000)}";
+
+            // For this demo, we'll use a random participant name as well. you may want to use user IDs in a production app
+            var participantName = $"user-{random.Next(1000, 10000)}";
+
+            var fetchTask = _tokenService.FetchConnectionDetails(roomName, participantName);
+            while (!fetchTask.IsCompleted)
+                yield return null;
+
+            if (fetchTask.IsFaulted)
+            {
+                Debug.LogError($"Failed to fetch connection details: {fetchTask.Exception}");
+                EndConversation();
+                yield break;
+            }
+            var details = fetchTask.Result;
+
             _room = new Room();
             _room.TrackSubscribed += OnTrackSubscribed;
             _room.TrackUnsubscribed += OnTrackUnsubscribed;
             _room.RegisterTextStreamHandler(TRANSCRIPTION_TOPIC, OnTranscriptionStreamOpened);
 
             var options = new LiveKit.RoomOptions();
-            // Optionally set addition room options before connecting
+            // Optionally set additional room options before connecting
 
-            Debug.Log($"Connecting to '{_configuration.ServerUrl}'");
-            var connect = _room.Connect(_configuration.ServerUrl, _configuration.Token, options);
+            Debug.Log($"Connecting to '{details.ServerUrl}'");
+            var connect = _room.Connect(details.ServerUrl, details.ParticipantToken, options);
             yield return connect;
 
             if (connect.IsError)
@@ -250,16 +260,6 @@ namespace AgentsExample
                 OnTranscription?.Invoke(transcription);
                 ClearPrevious = false;
             }
-        }
-        #endregion
-
-        #region Helper Methods
-
-        private bool HasValidConfiguration()
-        {
-            return _configuration != null &&
-                   !string.IsNullOrEmpty(_configuration.ServerUrl) &&
-                   !string.IsNullOrEmpty(_configuration.Token);
         }
         #endregion
 
