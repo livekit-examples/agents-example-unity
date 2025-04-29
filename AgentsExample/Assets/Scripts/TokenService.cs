@@ -64,34 +64,4 @@ namespace AgentsExample
         public string ParticipantName { get; init; }
         public string ParticipantToken { get; init; }
     }
-
-    public abstract class AuthConfig : ScriptableObject
-    {
-        public abstract bool IsValid { get; }
-    }
-
-    [CreateAssetMenu(fileName = "TokenService", menuName = "LiveKit/Sandbox Auth")]
-    public class SandboxAuth : AuthConfig
-    {
-        [SerializeField] private string _sandboxId;
-
-        public string SandboxId => _sandboxId?.Trim('"');
-
-        public override bool IsValid =>
-            !string.IsNullOrEmpty(SandboxId);
-    }
-
-    [CreateAssetMenu(fileName = "TokenService", menuName = "LiveKit/Hardcoded Auth")]
-    public class HardcodedAuth : AuthConfig
-    {
-        [SerializeField] private string _serverUrl;
-        [SerializeField] private string _token;
-
-        public string ServerUrl => _serverUrl;
-        public string Token => _token;
-
-        public override bool IsValid =>
-            !string.IsNullOrEmpty(ServerUrl) && ServerUrl.StartsWith("ws") &&
-            !string.IsNullOrEmpty(Token);
-    }
 }

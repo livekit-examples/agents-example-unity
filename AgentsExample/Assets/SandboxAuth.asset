@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 67e08bf4745dc44469fd6583a7fafa1c, type: 3}
   m_Name: SandboxAuth
-  m_EditorClassIdentifier: Assembly-CSharp:AgentsExample:SandboxAuth
+  m_EditorClassIdentifier: 
   _sandboxId: 
