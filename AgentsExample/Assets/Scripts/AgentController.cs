@@ -247,10 +247,11 @@ namespace AgentsExample
             var readIncremental = reader.ReadIncremental();
             var ClearPrevious = true;
 
-            while (!readIncremental.IsEos)
+            while (true)
             {
                 readIncremental.Reset();
                 yield return readIncremental;
+                if (readIncremental.IsEos) break;
 
                 var transcription = new Transcription
                 {
