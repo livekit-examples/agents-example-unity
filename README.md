@@ -17,7 +17,7 @@ git clone https://github.com/livekit-examples/agents-example-unity.git
 > [!NOTE]
 > When opening the project for the first time, it may take a few minutes to resolve the LiveKit SDK package.
 
-4. **Token Server**: Enable the [token server](https://docs.livekit.io/frontends/authentication/tokens/sandbox-token-server/) from your project's **Options** at the [Settings](https://cloud.livekit.io/projects/p_/settings/project) page and take note of the `sandboxId`. With the Unity project open, select [`SandboxAuth`](/AgentsExample/Assets/SandboxAuth.asset) in the "Assets" directory. From the inspector, fill in the `sandboxId` of your token server.
+4. **Token Server**: Enable the [token server](https://docs.livekit.io/frontends/authentication/tokens/sandbox-token-server/) from your project's **Options** on the [Settings](https://cloud.livekit.io/projects/p_/settings/project) page and take note of the `sandboxId`. With the Unity project open, select [`SandboxAuth`](/AgentsExample/Assets/SandboxAuth.asset) in the "Assets" directory. From the inspector, fill in the `sandboxId` of your token server.
 
 5. **Enter Play Mode**: Click the play button at the top of the Unity Editor to start the application.
 
