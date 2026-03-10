@@ -17,13 +17,13 @@ git clone https://github.com/livekit-examples/agents-example-unity.git
 > [!NOTE]
 > When opening the project for the first time, it may take a few minutes to resolve the LiveKit SDK package.
 
-4. **Sandbox Token Server**: Create a new [Sandbox Token Server](https://cloud.livekit.io/projects/p_/sandbox/templates/token-server) for your LiveKit Cloud project and take note of its ID. With the Unity project open, select [`SandboxAuth`](/AgentsExample/Assets/SandboxAuth.asset) in the "Assets" directory. From the inspector, fill in the ID of your sandbox token server.
+4. **Token Server**: Enable the [token server](https://docs.livekit.io/frontends/authentication/tokens/sandbox-token-server/) from your project's **Options** at the [Settings](https://cloud.livekit.io/projects/p_/settings/project) page and take note of the `sandboxId`. With the Unity project open, select [`SandboxAuth`](/AgentsExample/Assets/SandboxAuth.asset) in the "Assets" directory. From the inspector, fill in the `sandboxId` of your token server.
 
 5. **Enter Play Mode**: Click the play button at the top of the Unity Editor to start the application.
 
 ## Token generation
 
-In a production environment, you will be responsible for developing a solution to [generate tokens for your users](https://docs.livekit.io/home/server/generating-tokens/) which is integrated with your authentication solution. You should disable your sandbox token server and modify [`TokenService.cs`](/AgentsExample/Assets/Scripts/TokenService.cs) to use your own token server.
+In a production environment, you will be responsible for developing a solution to [generate tokens for your users](https://docs.livekit.io/home/server/generating-tokens/) which is integrated with your authentication solution. You should disable the token server and modify [`TokenService.cs`](/AgentsExample/Assets/Scripts/TokenService.cs) to use your own token server.
 
 ## Development
 
